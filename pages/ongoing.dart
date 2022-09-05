@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:laundry_app/models/slider_model.dart';
+import '../models/slider_model.dart';
 
 import 'login.dart';
 
