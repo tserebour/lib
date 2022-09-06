@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:laundry_app/screens/ongoing.dart';
+import 'pages/ongoing.dart';
+
 
 void main() {
+
   runApp(const MyApp());
+
 }
 
 class MyApp extends StatelessWidget {
