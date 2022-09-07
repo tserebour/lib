@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 
 
 class Customer extends Human {
-
+  int id = 0;
   String lastname = "";
   String address = "";
   String email = "";
