@@ -1,15 +1,26 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import './signup.dart';
-import 'home.dart';
+import '/customobjects/customer.dart';
+
+import 'dart:convert';
 
 class Login extends StatefulWidget {
+
+
+
+
+
+
   const Login({super.key});
   @override
   LoginState createState() => LoginState();
 }
 
-FocusNode emailNode = FocusNode(), passwordNode = FocusNode();
+    //creating a new customer object
+    var customer =  Customer();
+    FocusNode emailNode = FocusNode(),
+    passwordNode = FocusNode();
 
 class LoginState extends State<Login> {
   String? _email, _password;
@@ -75,11 +86,11 @@ class LoginState extends State<Login> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const MainBoard()),
-                        );
+
+
+                        LoginAndRedirect();
+
+
                       },
                       child: Align(
                         alignment: Alignment.centerRight,
@@ -162,7 +173,7 @@ class LoginState extends State<Login> {
               fontWeight: FontWeight.w400),
           textAlignVertical: TextAlignVertical.center,
           decoration: InputDecoration(
-            labelText: "Email",
+            labelText: "Username",
             labelStyle: TextStyle(
                 color: Colors.grey[600],
                 fontSize: 18,
@@ -183,8 +194,13 @@ class LoginState extends State<Login> {
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
           onSubmitted: (value) {
-            _email = value;
+
+            customer.username = value;
             FocusScope.of(context).requestFocus(passwordNode);
+
+          },
+          onChanged: (value) {
+            customer.username = value;
           },
         ),
       ),
@@ -230,12 +246,46 @@ class LoginState extends State<Login> {
           focusNode: passwordNode,
           maxLines: 1,
           textInputAction: TextInputAction.go,
+
           onSubmitted: (value) {
-            _password = value;
-            Focus.of(context).requestFocus(confirmPasswordNode);
+            customer.password = value;
+            // Focus.of(context).requestFocus(confirmPasswordNode);
           },
+
+          onChanged: (value) {
+            customer.password = value;
+            // Focus.of(context).requestFocus(confirmPasswordNode);
+          }
+
+
         ),
       ),
     );
+  }
+
+
+
+  Future LoginAndRedirect() async{
+
+    await customer.login();
+    print(customer.response);
+
+
+
+    var data =  await json.decode(customer.response);
+    print(data['response']);
+    if(data['response'] == "successful") {
+
+      Navigator.pushReplacementNamed(
+
+          context, '/home', arguments: {
+        'name': data['name']
+      }
+
+
+      );
+
+    }
+
   }
 }

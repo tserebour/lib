@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import './login.dart';
 import 'home.dart';
+import '/customobjects/customer.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -9,7 +10,7 @@ class Signup extends StatefulWidget {
   SignupState createState() => SignupState();
 }
 
-FocusNode usernameNode = FocusNode(),
+    FocusNode usernameNode = FocusNode(),
     firstnameNode = FocusNode(),
     lastnameNode = FocusNode(),
     addressNode = FocusNode(),
@@ -19,14 +20,7 @@ FocusNode usernameNode = FocusNode(),
     confirmPasswordNode = FocusNode();
 
 class SignupState extends State<Signup> {
-  String? _username,
-      _firstname,
-      _lastname,
-      _address,
-      _phone,
-      _email,
-      _password,
-      _confirmPassword;
+  Customer customer = Customer();
 
   @override
   Widget build(BuildContext context) {
@@ -100,10 +94,11 @@ class SignupState extends State<Signup> {
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => MainBoard()),
-                        );
+
+                        SignupAndRedirect();
+
+
+
                       },
                       child: Align(
                         alignment: Alignment.centerRight,
@@ -139,6 +134,9 @@ class SignupState extends State<Signup> {
                                 color: Colors.grey,
                               )),
                           InkWell(
+
+
+
                             onTap: () => Navigator.push(
                               context,
                               CupertinoPageRoute(
@@ -210,14 +208,36 @@ class SignupState extends State<Signup> {
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
           onSubmitted: (value) {
-            setState(() {
-              _username = value;
-            });
+            customer.username = value;
             FocusScope.of(context).requestFocus(firstnameNode);
           },
+          onChanged: (value) {
+
+            customer.username = value;
+          },
+
         ),
       ),
     );
+  }
+
+  Future SignupAndRedirect() async{
+
+    await customer.signup();
+
+    if(customer.response == "successful") {
+
+      Navigator.pushNamed(
+          context, '/loginpage'
+
+      );
+
+    }else if(customer.response == "password confirm error"){
+      print("Please enter");
+    }else{
+      print('ii');
+    }
+
   }
 
   Container firstnameText() {
@@ -264,10 +284,13 @@ class SignupState extends State<Signup> {
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
           onSubmitted: (value) {
-            setState(() {
-              _firstname = value;
-            });
+            customer.name = value;
             FocusScope.of(context).requestFocus(lastnameNode);
+          },
+
+          onChanged: (value) {
+
+            customer.name = value;
           },
         ),
       ),
@@ -318,8 +341,12 @@ class SignupState extends State<Signup> {
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
           onSubmitted: (value) {
-            _lastname = value;
+            customer.lastname = value;
             FocusScope.of(context).requestFocus(addressNode);
+          },
+          onChanged: (value) {
+
+            customer.lastname = value;
           },
         ),
       ),
@@ -370,10 +397,13 @@ class SignupState extends State<Signup> {
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
           onSubmitted: (value) {
-            setState(() {
-              _address = value;
-            });
+            customer.address = value;
             FocusScope.of(context).requestFocus(phoneNode);
+          },
+
+          onChanged: (value) {
+
+            customer.address = value;
           },
         ),
       ),
@@ -424,8 +454,13 @@ class SignupState extends State<Signup> {
           maxLines: 1,
           textInputAction: TextInputAction.next,
           onSubmitted: (value) {
-            _phone = value;
+            customer.phone = value;
             FocusScope.of(context).requestFocus(emailNode);
+          },
+
+          onChanged: (value) {
+
+            customer.phone = value;
           },
         ),
       ),
@@ -476,8 +511,13 @@ class SignupState extends State<Signup> {
           keyboardType: TextInputType.emailAddress,
           textInputAction: TextInputAction.next,
           onSubmitted: (value) {
-            _email = value;
+            customer.email = value;
             FocusScope.of(context).requestFocus(passwordNode);
+          },
+
+          onChanged: (value) {
+
+            customer.email = value;
           },
         ),
       ),
@@ -524,8 +564,13 @@ class SignupState extends State<Signup> {
           maxLines: 1,
           textInputAction: TextInputAction.go,
           onSubmitted: (value) {
-            _password = value;
+            customer.password = value;
             Focus.of(context).requestFocus(confirmPasswordNode);
+          },
+
+          onChanged: (value) {
+
+            customer.password = value;
           },
         ),
       ),
@@ -572,8 +617,13 @@ class SignupState extends State<Signup> {
           maxLines: 1,
           textInputAction: TextInputAction.go,
           onSubmitted: (value) {
-            _confirmPassword = value;
+            customer.confirm_password = value;
             confirmPasswordNode.unfocus();
+          },
+
+          onChanged: (value) {
+
+            customer.confirm_password = value;
           },
         ),
       ),

@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:laundry_app/screens/ongoing.dart';
+import 'pages/ongoing.dart';
+import 'pages/login.dart';
+import 'pages/signup.dart';
+import 'pages/home.dart';
+import 'pages/washing.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +21,13 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: Ongoing(),
+      routes: {
+        '/': (context) => const Ongoing(),
+        '/loginpage': (context) => const Login(),
+        '/signupage': (context) => const Signup(),
+        '/home': (context) => const MainBoard(),
+        '/washing': (context) => const Washing(),
+      },
     );
   }
 }

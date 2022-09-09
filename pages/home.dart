@@ -9,8 +9,12 @@ class MainBoard extends StatefulWidget {
 }
 
 class MainBoardState extends State<MainBoard> {
+  var data;
+
   @override
   Widget build(BuildContext context) {
+    data = ModalRoute.of(context)?.settings.arguments;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -33,7 +37,7 @@ class MainBoardState extends State<MainBoard> {
                             color: Colors.grey[600]),
                       ),
                       Text(
-                        "Mufasa",
+                        data['name'],
                         style: TextStyle(
                             fontSize: 22,
                             fontWeight: FontWeight.w500,
@@ -191,7 +195,11 @@ class MainBoardState extends State<MainBoard> {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const Washing()),
+          MaterialPageRoute(
+            builder: (context) => Washing(
+              operation: text,
+            ),
+          ),
         );
       },
       child: Container(

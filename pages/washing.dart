@@ -1,82 +1,292 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:laundry_app/customobjects/service_prices.dart';
+import 'package:laundry_app/models/services.dart';
 
 import '../flutter_counter.dart';
+import '../customobjects/customer.dart';
+import '../customobjects/cloth.dart';
+
+import 'package:http/http.dart' as http;
+
+// class Washing extends StatefulWidget {
+//   const Washing({
+//     super.key,
+//     this.operation,
+//   });
+//   final String? operation;
+//   @override
+//   WashingState createState() => WashingState();
+// }
+
+// class WashingState extends State<Washing> {
+//   String response = "";
+//   int total_sum = 0;
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       body: SafeArea(
+//         child: SingleChildScrollView(
+//           child: Column(
+//             crossAxisAlignment: CrossAxisAlignment.start,
+//             children: [
+//               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+//                 IconButton(
+//                   onPressed: () {
+//                     Navigator.pop(context);
+//                   },
+//                   icon: Icon(
+//                     Icons.arrow_back,
+//                     color: Colors.grey[600],
+//                     size: 25,
+//                   ),
+//                 ),
+//                 IconButton(
+//                   onPressed: () {},
+//                   icon: Icon(
+//                     Icons.menu,
+//                     color: Colors.grey[600],
+//                     size: 25,
+//                   ),
+//                 )
+//               ]),
+//               const SizedBox(
+//                 height: 20,
+//               ),
+//               Padding(
+//                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
+//                 child: Text(widget.operation.toString(),
+//                     style: TextStyle(
+//                         fontSize: 20,
+//                         color: Colors.grey[600],
+//                         fontWeight: FontWeight.w500)),
+//               ),
+//               const SizedBox(
+//                 height: 20,
+//               ),
+//               const Padding(
+//                 padding: EdgeInsets.symmetric(horizontal: 16.0),
+//                 child: CounterWidget(),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   /// method for the search box
+//   Container buildSearchContainer() {
+//     return Container(
+//       width: MediaQuery.of(context).size.width,
+//       decoration: BoxDecoration(
+//           color: Colors.white,
+//           borderRadius: BorderRadius.circular(20),
+//           border: Border.all(color: Colors.white70),
+//           boxShadow: [
+//             BoxShadow(
+//               color: Colors.grey.shade200,
+//               blurRadius: 3,
+//               offset: const Offset(0, 3),
+//             )
+//           ]),
+//       child: Padding(
+//         padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+//         child: TextField(
+//           style: TextStyle(
+//             fontSize: 14,
+//             color: Colors.grey[500],
+//           ),
+//           decoration: InputDecoration(
+//             border: InputBorder.none,
+//             hintText: "Search",
+//             hintStyle: TextStyle(
+//               fontSize: 14,
+//               color: Colors.grey[500],
+//             ),
+//             fillColor: Colors.grey[500],
+//             icon: const Icon(Icons.search),
+//           ),
+//           maxLines: 1,
+//           textInputAction: TextInputAction.search,
+//         ),
+//       ),
+//     );
+//   }
+// }
 
 class Washing extends StatefulWidget {
-  const Washing({super.key});
+  const Washing({super.key, this.operation});
+  final String? operation;
   @override
   WashingState createState() => WashingState();
 }
 
 class WashingState extends State<Washing> {
+  int selected = 0;
+  int id = 0;
+  List<int> quantities = [];
+  Future getService() async {
+    var url = Uri.http(Customer().server, '/laundry/services.php');
+    var response = await http.post(url);
+    if (response.statusCode == 200) {
+      print('status: ${response.statusCode}');
+      // print('status: ${response.body}');
+      List service;
+      service = jsonDecode(response.body)
+          .map((e) => ServiceModel.fromJson(e))
+          .toList();
+      print('services: ${service}');
+      return service;
+    } else {
+      print('status: ${response.statusCode}');
+      // print('status: ${response.body}');
+      return response.body.toString();
+    }
+  }
+
+  Future? getServices;
+
+  @override
+  void initState() {
+    super.initState();
+    getServices = getService();
+  }
+
   @override
   Widget build(BuildContext context) {
+    return buildContainerClothes();
+  }
+
+  Widget buildContainerClothes() {
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Icon(
-                        Icons.arrow_back,
-                        color: Colors.grey[600],
-                        size: 25,
-                      ),
-                      Icon(
-                        Icons.menu,
-                        color: Colors.grey[600],
-                        size: 25,
-                      )
-                    ]),
-                const SizedBox(
-                  height: 20,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+                IconButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  icon: Icon(
+                    Icons.arrow_back,
+                    color: Colors.grey[600],
+                    size: 25,
+                  ),
                 ),
-                Text("Washing",
+                IconButton(
+                  onPressed: () {},
+                  icon: Icon(
+                    Icons.menu,
+                    color: Colors.grey[600],
+                    size: 25,
+                  ),
+                )
+              ]),
+              const SizedBox(
+                height: 20,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Text(widget.operation.toString(),
                     style: TextStyle(
                         fontSize: 20,
                         color: Colors.grey[600],
                         fontWeight: FontWeight.w500)),
-                const SizedBox(
-                  height: 20,
-                ),
-                buildSearchContainer(),
-                const SizedBox(
-                  height: 20,
-                ),
-                CounterWidget(
-                    "assets/images/ClothesBlack/shirt.png", "shirt", "\$20"),
-                const SizedBox(
-                  height: 20,
-                ),
-                CounterWidget(
-                    "assets/images/ClothesBlack/tshirt.png", "T shirt", "\$25"),
-                const SizedBox(
-                  height: 20,
-                ),
-                CounterWidget(
-                    "assets/images/ClothesBlack/trousers.png", "pants", "\$30"),
-                const SizedBox(
-                  height: 20,
-                ),
-                CounterWidget(
-                    "assets/images/ClothesBlack/scarf.png", "scarf", "\$10"),
-                const SizedBox(
-                  height: 20,
-                ),
-                CounterWidget(
-                    "assets/images/ClothesBlack/jacket.png", "jacket", "\$45"),
-                const SizedBox(
-                  height: 20,
-                ),
-                CounterWidget(
-                    "assets/images/ClothesBlack/coat.png", "coat", "\$50"),
-              ],
-            ),
+              ),
+              const SizedBox(
+                height: 20,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: FutureBuilder(
+                    future: getService(),
+                    builder: (_, AsyncSnapshot snapshot) {
+                      if (snapshot.hasData) {
+                        return ListView.separated(
+                          separatorBuilder: (context, index) => const SizedBox(
+                            height: 10,
+                          ),
+                          shrinkWrap: true,
+                          itemCount: snapshot.data.length,
+                          itemBuilder: (context, index) => Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(color: Colors.white70),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.grey.shade200,
+                                        blurRadius: 3,
+                                        offset: const Offset(0, 3),
+                                      )
+                                    ]),
+                                child: Image.asset(
+                                  snapshot.data[index].img,
+                                  height: 50,
+                                  width: 50,
+                                ),
+                              ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    snapshot.data[index].cloth,
+                                    style: TextStyle(
+                                        fontSize: 22, color: Colors.grey[700]),
+                                  ),
+                                  Text(
+                                    snapshot.data[index].price,
+                                    style: const TextStyle(
+                                        fontSize: 18, color: Colors.blue),
+                                  ),
+                                ],
+                              ),
+                              Counter(
+                                minValue: 0,
+                                maxValue: 100,
+                                decimalPlaces: 0,
+                                initialValue: selected,
+                                step: 1,
+                                color: Colors.white,
+                                textStyle: const TextStyle(letterSpacing: 10),
+                                onChanged: (value0) {
+                                  setState(() {
+                                    selected = value0.toInt();
+                                    quantities[id] = value0.toInt();
+                                  });
+                                  double sum = 0;
+                                  print(sum);
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Container(
+                            padding: const EdgeInsets.all(40),
+                            child: Center(
+                                child: Text("Error: ${snapshot.error}")));
+                      } else {
+                        return Container(
+                          padding: const EdgeInsets.all(40),
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+                    }),
+              ),
+            ],
           ),
         ),
       ),
@@ -119,9 +329,9 @@ class WashingState extends State<Washing> {
                       color: Colors.grey[600],
                       fontWeight: FontWeight.w400),
                 ),
-                const Text(
-                  "\$68",
-                  style: TextStyle(
+                Text(
+                  'GHS ${id}',
+                  style: const TextStyle(
                       fontSize: 18,
                       color: Colors.blue,
                       fontWeight: FontWeight.w500),
@@ -131,115 +341,6 @@ class WashingState extends State<Washing> {
           ],
         ),
       ),
-    );
-  }
-
-  Container buildSearchContainer() {
-    return Container(
-      width: MediaQuery.of(context).size.width,
-      decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white70),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.shade200,
-              blurRadius: 3,
-              offset: const Offset(0, 3),
-            )
-          ]),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
-        child: TextField(
-          style: TextStyle(
-            fontSize: 14,
-            color: Colors.grey[500],
-          ),
-          decoration: InputDecoration(
-            border: InputBorder.none,
-            hintText: "Search",
-            hintStyle: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[500],
-            ),
-            fillColor: Colors.grey[500],
-            icon: const Icon(Icons.search),
-          ),
-          maxLines: 1,
-          textInputAction: TextInputAction.search,
-        ),
-      ),
-    );
-  }
-}
-
-class CounterWidget extends StatefulWidget {
-  CounterWidget(this.image, this.nom, this.prix, {super.key});
-
-  final String image, nom, prix;
-  int selected = 3;
-
-  @override
-  CounterState createState() => CounterState();
-}
-
-class CounterState extends State<CounterWidget> {
-  @override
-  Widget build(BuildContext context) {
-    return buildContainerClothes(widget.image, widget.nom, widget.prix);
-  }
-
-  Widget buildContainerClothes(String image, String nom, String prix) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.white70),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.shade200,
-                  blurRadius: 3,
-                  offset: const Offset(0, 3),
-                )
-              ]),
-          child: Image.asset(
-            image,
-            height: 50,
-            width: 50,
-          ),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              nom,
-              style: TextStyle(fontSize: 22, color: Colors.grey[700]),
-            ),
-            Text(
-              prix,
-              style: const TextStyle(fontSize: 18, color: Colors.blue),
-            ),
-          ],
-        ),
-        Counter(
-          minValue: 0,
-          maxValue: 10,
-          decimalPlaces: 0,
-          initialValue: widget.selected,
-          step: 1,
-          color: Colors.white,
-          textStyle: const TextStyle(letterSpacing: 10),
-          onChanged: (value0) {
-            setState(() {
-              widget.selected = value0.toInt();
-            });
-          },
-        ),
-      ],
     );
   }
 }
